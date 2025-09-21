@@ -61,13 +61,43 @@ services:
       - "8545:8545"
 ```
 
-**Crie o arquivo `Dockerfile` (opcional - para customização):**
+**Crie o arquivo `Dockerfile` (para setup customizado):**
 ```dockerfile
 # Dockerfile
-FROM ghcr.io/foundry-rs/foundry:latest
+FROM ubuntu:22.04
 
-# Configurações adicionais se necessário
-ENV FOUNDRY_DISABLE_NIGHTLY_WARNING=1
+# Evita prompts e prepara dependências básicas
+ENV DEBIAN_FRONTEND=noninteractive
+
+RUN apt-get update && apt-get install -y \
+    curl git build-essential pkg-config libssl-dev ca-certificates \
+ && rm -rf /var/lib/apt/lists/*
+
+# Usuário não-root para melhorar DX
+ARG USER=dev
+ARG UID=1000
+ARG GID=1000
+RUN groupadd -g $GID $USER && useradd -m -u $UID -g $GID -s /bin/bash $USER
+
+USER $USER
+WORKDIR /home/$USER/work
+SHELL ["/bin/bash", "-lc"]
+
+# Instala Foundry (forge, cast, anvil)
+RUN curl -L https://foundry.paradigm.xyz | bash && \
+    $HOME/.foundry/bin/foundryup
+
+# Adiciona o diretório do Foundry ao PATH
+ENV PATH="/home/dev/.foundry/bin:$PATH"
+
+# Verifica se os binários foram instalados corretamente
+RUN ls -la /home/dev/.foundry/bin/ && \
+    /home/dev/.foundry/bin/forge --version && \
+    /home/dev/.foundry/bin/cast --version && \
+    /home/dev/.foundry/bin/anvil --version
+
+# Ambiente interativo por padrão
+ENTRYPOINT ["/bin/bash"]
 ```
 
 ### 3. Criar script helper (opcional)
@@ -106,7 +136,19 @@ docker-compose --version
 docker compose pull
 ```
 
-### 3. Testar o Foundry
+### 3. **IMPORTANTE: Construir a imagem (se usando Dockerfile customizado)**
+
+Se você está usando o Dockerfile customizado, precisa construir a imagem:
+
+```cmd
+# Construir a imagem customizada
+docker compose build
+
+# Ou construir sem cache (se houver problemas)
+docker compose build --no-cache
+```
+
+### 4. Testar o Foundry
 
 ```cmd
 docker compose run --rm foundry forge --version
@@ -351,6 +393,17 @@ exit
 # Ou pressione Ctrl+D
 ```
 
+### Problema: "Image not found" ou "Build failed"
+**Solução:** 
+```cmd
+# Reconstruir a imagem
+docker compose build --no-cache
+
+# Ou usar a imagem oficial
+# Comente a linha 'build: .' no docker-compose.yml
+# E use apenas 'image: ghcr.io/foundry-rs/foundry:latest'
+```
+
 ## 📚 Comandos Úteis
 
 ### Docker
@@ -366,6 +419,12 @@ docker system prune
 
 # Ver logs do container
 docker compose logs foundry
+
+# Reconstruir imagem
+docker compose build
+
+# Reconstruir sem cache
+docker compose build --no-cache
 ```
 
 ### Foundry

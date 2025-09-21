@@ -1,7 +1,12 @@
 # docker-compose.yml
 services:
   foundry:
+    # Opção 1: Usar imagem oficial (mais simples)
     image: ghcr.io/foundry-rs/foundry:latest
+    
+    # Opção 2: Usar Dockerfile customizado (descomente as linhas abaixo)
+    # build: .
+    
     working_dir: /work
     volumes:
       - ./:/work
