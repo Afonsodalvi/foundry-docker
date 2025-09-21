@@ -1,0 +1,14 @@
+# docker-compose.yml
+services:
+  foundry:
+    image: ghcr.io/foundry-rs/foundry:latest
+    working_dir: /work
+    volumes:
+      - ./:/work
+    tty: true
+    stdin_open: true
+    environment:
+      - FOUNDRY_DISABLE_NIGHTLY_WARNING=1
+    # mapeia a porta do anvil para usar do host
+    ports:
+      - "8545:8545"
