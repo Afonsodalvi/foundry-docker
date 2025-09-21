@@ -1,6 +1,6 @@
-# 🚀 Foundry Docker - Guia Completo para Windows
+# 🚀 Foundry Docker - Guia Completo para Windows e macOS
 
-Este guia te ajudará a configurar e usar o Foundry (Forge, Cast, Anvil) em um ambiente Docker no Windows, permitindo desenvolvimento de contratos inteligentes Solidity de forma fácil e isolada.
+Este guia te ajudará a configurar e usar o Foundry (Forge, Cast, Anvil) em um ambiente Docker no Windows e macOS, permitindo desenvolvimento de contratos inteligentes Solidity de forma fácil e isolada.
 
 ## 📋 Pré-requisitos
 
@@ -27,10 +27,40 @@ Este guia te ajudará a configurar e usar o Foundry (Forge, Cast, Anvil) em um a
    docker-compose --version
    ```
 
-### 2. Instalar Git (Opcional mas recomendado)
+### 2. Instalar Docker Desktop para macOS
 
+1. **Baixe o Docker Desktop:**
+   - Acesse: https://www.docker.com/products/docker-desktop/
+   - Clique em "Download for Mac"
+
+2. **Execute o instalador:**
+   - Execute o arquivo `Docker.dmg`
+   - Arraste o Docker para a pasta Applications
+   - Siga as instruções do instalador
+
+3. **Inicie o Docker Desktop:**
+   - Abra o Docker Desktop da pasta Applications
+   - **OU use o comando no terminal:**
+   ```bash
+   open -a Docker
+   ```
+   - Aguarde o Docker inicializar completamente (ícone da baleia na barra de menu)
+
+4. **Verifique se está funcionando:**
+   ```bash
+   docker --version
+   docker compose --version
+   ```
+
+### 3. Instalar Git (Opcional mas recomendado)
+
+**Para Windows:**
 1. Baixe o Git: https://git-scm.com/download/win
 2. Instale com as configurações padrão
+
+**Para macOS:**
+1. Instale via Homebrew: `brew install git`
+2. OU baixe de: https://git-scm.com/download/mac
 
 ## 🛠️ Configuração do Projeto
 
@@ -125,9 +155,20 @@ echo   anvil        - Iniciar Anvil (blockchain local)
 
 ### 1. Verificar se o Docker está funcionando
 
+**Para Windows:**
 ```cmd
 docker --version
 docker-compose --version
+```
+
+**Para macOS:**
+```bash
+# Se o Docker não estiver rodando, inicie-o:
+open -a Docker
+
+# Aguarde alguns segundos e verifique:
+docker --version
+docker compose --version
 ```
 
 ### 2. Baixar a imagem do Foundry
@@ -363,10 +404,28 @@ contract MeuContratoTest is Test {
 **Solução:** Verifique se o Docker Desktop está rodando e reinicie o terminal.
 
 ### Problema: "Cannot connect to the Docker daemon"
-**Solução:** 
+**Solução para Windows:** 
 1. Reinicie o Docker Desktop
 2. Verifique se o WSL 2 está habilitado
 3. Execute como administrador se necessário
+
+**Solução para macOS:**
+1. **Inicie o Docker Desktop:**
+   ```bash
+   open -a Docker
+   ```
+2. Aguarde alguns segundos para o Docker inicializar
+3. Verifique se está funcionando:
+   ```bash
+   docker ps
+   ```
+4. Se ainda não funcionar, reinicie o Docker Desktop:
+   ```bash
+   # Parar o Docker
+   pkill -f Docker
+   # Iniciar novamente
+   open -a Docker
+   ```
 
 ### Problema: "Port 8545 already in use"
 **Solução:** 
@@ -407,7 +466,9 @@ docker compose build --no-cache
 ## 📚 Comandos Úteis
 
 ### Docker
-```cmd
+
+**Comandos básicos (Windows e macOS):**
+```bash
 # Ver containers rodando
 docker ps
 
@@ -425,6 +486,21 @@ docker compose build
 
 # Reconstruir sem cache
 docker compose build --no-cache
+```
+
+**Comandos específicos para macOS:**
+```bash
+# Iniciar Docker Desktop
+open -a Docker
+
+# Parar Docker Desktop
+pkill -f Docker
+
+# Verificar se Docker está rodando
+docker ps
+
+# Reiniciar Docker Desktop
+pkill -f Docker && sleep 3 && open -a Docker
 ```
 
 ### Foundry
